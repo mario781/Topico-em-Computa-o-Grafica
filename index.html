@@ -1,84 +1,51 @@
 <!DOCTYPE html>
-<html lang="pt-BR">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <title>Hello World - teste</title>
-	<script src="https://aframe.io/releases/1.8.0/aframe.min.js"></script>
-  
+  <meta charset="UTF-8">
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.184.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.184.0/examples/jsm/"
+    }
+  }
+  </script>
 </head>
-
 <body>
-    
-	<a-scene cursor="rayOrigin: mouse" raycaster="objects: .clickable">
-      <a-sky color="#D3D3D3"></a-sky>
+  <script type="module">
+    import * as THREE from 'three';
+
+    // Pilar 1: a cena
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color('#16121f');
+
+    // Pilar 2: a camera
+    const camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.1, 100);
+    camera.position.set(0, 1.6, 5);
+
+    // Pilar 3: o renderer
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setSize(innerWidth, innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    // um cubo: Geometria + Material = Malha
+    const cubo = new THREE.Mesh(
+      new THREE.BoxGeometry(1, 1, 1),
+      new THREE.MeshStandardMaterial({ color: '#6c4cff' })
+    );
+    cubo.position.set(0, 1.5, 0);
+    scene.add(cubo);
+
+    // Pilar 4: o loop de renderizacao
+    function animar() {
+      requestAnimationFrame(animar);
 	  
-      <a-plane rotation="-90 0 0" width="60" height="60" color="#2a2440"></a-plane>
-      
-	  <a-light type="ambient" color="#9a92b5" intensity="0.7"></a-light>
+	  cubo.rotation.y += 0.01;
+	  cubo.rotation.x += 0.005;
 	  
-	  <a-light type="directional" color="#ffffff" intensity="0.85" position="-1 3 2"></a-light>
-	  
-	  <a-box class="clickable" rotation="0 45 0"  position="-3.0 1.5 -1" color="#ff5d8f"  animation__click="property: scale; to: 2 2 2; dir: alternate; loop: 2; dur: 540; startEvents: click" interativo data-nome="Cubo" >
-		<a-text value="Cubo" align="center" width="3" color="#008B8B" position="0 0.75 0"></a-text>
-			
-	  </a-box>
-	  
-	  <a-sphere class="clickable" position="-1.5 1.5 -1" radius="0.45" color="#ffb454" animation__click="property: scale; to: 2 2 2; dir: alternate; loop: 2; dur: 540; startEvents: click" interativo data-nome="Esfera" >
-	    <a-text value="Esfera" align="center" width="3" color="#008B8B" position="0 0.75 0"></a-text> 
-	  
-	  </a-sphere>
-      
-	  <a-cylinder  class="clickable"  position="-0.5 1.5 -1" radius="0.4" height="0.9" color="#4fd1c5"   animation__click="property: scale ; to: 2 2 2; dir: alternate; loop: 2; dur: 540; startEvents: click" interativo data-nome="Cilindro" >
-	  <a-text value="Cilindro" align="center" width="3" color="#008B8B" position="0 0.75 0"></a-text>
-	  
-	  </a-cylinder>
-      
-	  <a-cone  class="clickable" position="0.5 1.5 -1" radius-bottom="0.5" radius-top="0" height="0.9" color="#63b3ed"  animation__click="property: scale ; to: 2 2 2; dir: alternate; loop: 2; dur: 540; startEvents: click" interativo data-nome="Cone" >
-	  <a-text value="Cone" align="center" width="3" color="#008B8B" position="0 0.75 0"></a-text>
-	  
-	  </a-cone>
-	  
-	  <a-torus  class="clickable" scale="1.5 1.5 1.5"     position="2 1.5 -1" radius="0.4" radius-tubular="0.12" color="#b794f4"  animation__click="property: scale ; to: 2 2 2; dir: alternate; loop: 2; dur: 540; startEvents: click" interativo data-nome="Rosquinha" >
-	  <a-text value="Rosquinha" align="center" width="3" color="#008B8B" position="0 0.75 0"  ></a-text>
-	  
-	  </a-torus>
-	  
-	  
-	  </a-dodecahedron>
-	  
-	  <a-dodecahedron class="clickable" position="3.5 1.5 -1" radius="0.48" color="#f687b3" animation__click="property: scale; from: 1 1 1; to: 2 2 2; dir: alternate; loop: 2; dur: 540; startEvents: click" material="" geometry="" interativo data-nome="Poliedro" >
-      <a-text value="Dodecaedro" align="center" width="3" color="#DE4300" position="0 0.8 0" text=""></a-text>
-	  </a-dodecahedron>
-	  
-	  <a-camera>
-		<a-entity id="painel-msg" visible="false" position="0 -0.55 -1"
-            geometry="primitive: plane; width: 0.95; height: 0.18"
-            material="color: #0e0b16; opacity: 0.88; shader: flat">
-			<a-text id="texto-msg" value="" align="center" width="1.6" color="#ffffff" position="0 0 0.01"></a-text>
-		</a-entity>
-	  </a-camera>
-	
-	
-	</a-scene>
-	
-	<script>
-	  AFRAME.registerComponent('interativo', {
-		init: function () {
-		  var el = this.el;
-		  var nome = el.getAttribute('data-nome') || 'objeto';
-		  el.addEventListener('click', function () {
-			// sorteia uma cor e aplica no material
-			var cor = '#' + Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0');
-			el.setAttribute('material', 'color', cor);
-			// escreve e mostra a mensagem
-			document.querySelector('#texto-msg').setAttribute('value', 'Voce tocou em: ' + nome);
-			document.querySelector('#painel-msg').setAttribute('visible', true);
-		  });
-		}
-	  });
-	</script>
-	
+      renderer.render(scene, camera);
+    }
+    animar();
+  </script>
 </body>
-
-
 </html>
