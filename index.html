@@ -111,10 +111,11 @@
     // um arquivo .glb traz geometria, materiais e texturas prontos; o carregamento é assíncrono
     let modelo;
     new GLTFLoader().load(
-      'C:\Users\Usuario\Desktop\topicos em computação grafica\Aula 2\mountain-dragon\source\MOUNTAIN_DRAGON_ANIMATIONS.glb',
+      './mountain_dragon.glb',
       (gltf) => {
         modelo = gltf.scene;
         modelo.position.set(0, 0, -4);
+		modelo.scale.set(10, 10, 10);
         scene.add(modelo);
       }
     );
