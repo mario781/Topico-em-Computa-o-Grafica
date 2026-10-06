@@ -110,17 +110,13 @@
 	// ================ O MODELO glTF ================
     // um arquivo .glb traz geometria, materiais e texturas prontos; o carregamento é assíncrono
     let modelo;
-    new GLTFLoader().load(
-      'https://github.com/mario781/Topico-em-Computa-o-Grafica/tree/Aula-2/mountain_dragon.glb',
+    new GLTFLoader().load( 'https://github.com/mario781/Topico-em-Computa-o-Grafica/tree/Aula-2/mountain_dragon.glb',
       (gltf) => {
         modelo = gltf.scene;
         modelo.position.set(0, 0, -4);
-		modelo.scale.set(10, 10, 10);
         scene.add(modelo);
       }
     );
-	
-	
 	
     // ================ O LAÇO ================
     // a cada quadro: mexe no que precisa e desenha de novo
