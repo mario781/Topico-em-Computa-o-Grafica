@@ -1,7 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Minha cena em Three.js</title>
+  <style>body { margin: 0; overflow: hidden; }</style>
+
+  <!-- o import map diz ao navegador onde encontrar "three" e os complementos -->
   <script type="importmap">
   {
     "imports": {
@@ -14,38 +19,124 @@
 <body>
   <script type="module">
     import * as THREE from 'three';
+	import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+	import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
-    // Pilar 1: a cena
+	
+    // ================ OS QUATRO PILARES ================
+    // 1. a cena: o palco, onde tudo é colocado
     const scene = new THREE.Scene();
     scene.background = new THREE.Color('#16121f');
-
-    // Pilar 2: a camera
+    // 2. a câmera: o olho. 70 graus de abertura, e só vê de 0,1 a 100 metros
     const camera = new THREE.PerspectiveCamera(70, innerWidth / innerHeight, 0.1, 100);
     camera.position.set(0, 1.6, 5);
-
-    // Pilar 3: o renderer
+    // 3. o renderizador: desenha a cena, vista pela câmera, num canvas
     const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));   // nitidez, sem exagero no celular
     renderer.setSize(innerWidth, innerHeight);
     document.body.appendChild(renderer.domElement);
-
-    // um cubo: Geometria + Material = Malha
-    const cubo = new THREE.Mesh(
-      new THREE.BoxGeometry(1, 1, 1),
-      new THREE.MeshStandardMaterial({ color: '#6c4cff' })
+    // quando a janela muda de tamanho, a câmera e o canvas acompanham
+    window.addEventListener('resize', () => {
+      camera.aspect = innerWidth / innerHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(innerWidth, innerHeight);
+    });
+	
+	// ================ OLHAR EM VOLTA ================
+    // arraste para girar, role para aproximar; o alvo é o centro da galeria
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableDamping = true;   // o movimento desacelera suave, mas precisa de update() no laço
+    controls.target.set(0, 1.4, -1);
+	
+	// ================ A GALERIA DE FORMAS ================
+    // seis geometrias prontas do Three.js, lado a lado; o nome fica guardado em userData
+    const dados = [
+      { geo: new THREE.BoxGeometry(0.7, 0.7, 0.7),           cor: '#ff5d8f', nome: 'Cubo' },
+      { geo: new THREE.SphereGeometry(0.45, 32, 16),         cor: '#ffb454', nome: 'Esfera' },
+      { geo: new THREE.CylinderGeometry(0.4, 0.4, 0.9, 32),  cor: '#4fd1c5', nome: 'Cilindro' },
+      { geo: new THREE.ConeGeometry(0.5, 0.9, 32),           cor: '#63b3ed', nome: 'Cone' },
+      { geo: new THREE.TorusGeometry(0.4, 0.12, 16, 48),     cor: '#b794f4', nome: 'Toro' },
+      { geo: new THREE.DodecahedronGeometry(0.48),           cor: '#f687b3', nome: 'Dodecaedro' }
+    ];
+    const formas = [];
+    dados.forEach((d, i) => {
+      const malha = new THREE.Mesh(d.geo, new THREE.MeshStandardMaterial({ color: d.cor }));
+      malha.position.set(-2.5 + i * 1.0, 1.5, -1);
+      malha.userData.nome = d.nome;
+      scene.add(malha);
+      formas.push(malha);
+    });
+	
+	
+    // ================ O AMBIENTE ================
+    // a luz ambiente clareia tudo por igual; a direcional é o sol, e faz o volume aparecer
+    scene.add(new THREE.AmbientLight('#9a92b5', 1.2));
+    const sol = new THREE.DirectionalLight('#ffffff', 2.0);
+    sol.position.set(-1, 3, 2);
+    scene.add(sol);
+    // o chão: um plano, deitado com uma rotação de 90 graus
+    const chao = new THREE.Mesh(
+      new THREE.PlaneGeometry(60, 60),
+      new THREE.MeshStandardMaterial({ color: '#2a2440' })
     );
-    cubo.position.set(0, 1.5, 0);
-    scene.add(cubo);
-
-    // Pilar 4: o loop de renderizacao
+    chao.rotation.x = -Math.PI / 2;
+    scene.add(chao);
+	
+	// ================ RAYCASTING ================
+    // um raio sai da câmera, passando pelo ponto clicado; a primeira forma que ele toca muda de cor
+    const raycaster = new THREE.Raycaster();
+    const ponteiro = new THREE.Vector2();
+    window.addEventListener('click', (evento) => {
+      // de pixels para coordenadas de -1 a 1, que é o que o raycaster entende
+      ponteiro.x = (evento.clientX / innerWidth) * 2 - 1;
+      ponteiro.y = -(evento.clientY / innerHeight) * 2 + 1;
+      raycaster.setFromCamera(ponteiro, camera);
+      const alvos = raycaster.intersectObjects(formas);
+      if (alvos.length > 0) {
+        alvos[0].object.material.color.setHSL(Math.random(), 2, 0.6);
+      }
+    });
+	
+//    // ================ O OBJETO ================   COMENTADO PARA TIRAR O CUBO DO CENTRO.
+//    // 4. o objeto: uma malha é a forma (geometria) mais a aparência (material)
+//    const cubo = new THREE.Mesh(
+//      new THREE.BoxGeometry(1, 1, 1),
+//      //new THREE.MeshBasicMaterial({ color: '#6c4cff' }) comentado no passo 2.
+//	  new THREE.MeshStandardMaterial({ color: '#6c4cff' })
+//    );
+//    cubo.position.set(0, 1.5, 0);
+//    scene.add(cubo);
+	
+	// ================ O MODELO glTF ================
+    // um arquivo .glb traz geometria, materiais e texturas prontos; o carregamento é assíncrono
+    let modelo;
+    new GLTFLoader().load(
+      'C:\Users\Usuario\Desktop\topicos em computação grafica\Aula 2\mountain-dragon\source\MOUNTAIN_DRAGON_ANIMATIONS.glb',
+      (gltf) => {
+        modelo = gltf.scene;
+        modelo.position.set(0, 0, -4);
+        scene.add(modelo);
+      }
+    );
+	
+	
+	
+    // ================ O LAÇO ================
+    // a cada quadro: mexe no que precisa e desenha de novo
     function animar() {
       requestAnimationFrame(animar);
-	  
-	  cubo.rotation.y += 0.01;
-	  cubo.rotation.x += 0.005;
-	  
+      //cubo.rotation.y += 0.01; TIRANDO GIRO DO CUBO E COLOCANDO NAS FORMAS.
+      //cubo.rotation.x += 0.005;
+      formas.forEach((f) => { f.rotation.y += 0.10; });
+	  controls.update();
+	  if (modelo) modelo.rotation.y += 0.01;   // só depois que o modelo chegou
       renderer.render(scene, camera);
     }
     animar();
   </script>
+  
+ 
+	
+  
 </body>
 </html>
