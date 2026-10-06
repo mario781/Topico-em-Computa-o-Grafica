@@ -110,11 +110,12 @@
 	// ================ O MODELO glTF ================
     // um arquivo .glb traz geometria, materiais e texturas prontos; o carregamento é assíncrono
     let modelo;
-    new GLTFLoader().load( 'https://github.com/mario781/Topico-em-Computa-o-Grafica/tree/Aula-2/mountain_dragon.glb',
+    new GLTFLoader().load( './clockwork_porcelain_horse_modelai3d_vs_supavoxel.glb',
       (gltf) => {
         modelo = gltf.scene;
         modelo.position.set(0, 0, -4);
         scene.add(modelo);
+		
       }
     );
 	
@@ -131,9 +132,5 @@
     }
     animar();
   </script>
-  
- 
-	
-  
 </body>
 </html>
