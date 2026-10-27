@@ -28,7 +28,17 @@
     <!-- ================ O MARCADOR ================ -->
     <!-- tudo o que fica dentro do a-marker aparece sobre o marcador; a origem 0 0 0 é o centro dele -->
     <a-marker preset="hiro">
-      <a-box position="0 0.5 0" color="#6c4cff"></a-box>
+      <!-- <a-box position="0 0.5 0" color="#6c4cff"></a-box> -- [APENAS UM CUBO ROXO]>
+	  
+	  <!-- o sistema: o planeta gira no próprio eixo, e a lua gira em volta dele -->
+      <a-entity position="0 0.5 0">
+        <a-sphere radius="0.4" color="#4fd1c5"
+                  animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear"></a-sphere>
+        <!-- o pivô da lua: gira, e leva a lua junto (pai e filho, do Encontro 1) -->
+        <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear">
+          <a-sphere radius="0.1" color="#ffb454" position="0.8 0 0"></a-sphere>
+        </a-entity>
+      </a-entity>
     </a-marker>
 
     <!-- ================ A CÂMERA ================ -->
