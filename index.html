@@ -13,6 +13,25 @@
     #aviso { position: fixed; top: 12px; left: 12px; z-index: 10; max-width: 320px; padding: 10px 14px;
              border-radius: 10px; background: rgba(27, 21, 38, 0.85); color: #fff; font: 16px sans-serif; }
   </style>
+  
+  <script>
+    // ================ COMPONENTE: AVISO MARCADOR ================
+    // a biblioteca avisa quando encontra o alvo (markerFound) e quando o perde (markerLost)
+    AFRAME.registerComponent('aviso-marcador', {
+      init: function () {
+        const aviso = document.getElementById('aviso');
+        this.el.addEventListener('markerFound', () => {
+          aviso.textContent = 'Marcador encontrado!';
+          aviso.style.background = 'rgba(15, 157, 107, 0.9)';
+        });
+        this.el.addEventListener('markerLost', () => {
+          aviso.textContent = 'Marcador perdido. Aponte de novo.';
+          aviso.style.background = 'rgba(27, 21, 38, 0.85)';
+        });
+      }
+    });
+  </script>
+  
 </head>
 <body>
   <!-- ================ O AVISO NA TELA ================ -->
@@ -27,7 +46,9 @@
 
     <!-- ================ O MARCADOR ================ -->
     <!-- tudo o que fica dentro do a-marker aparece sobre o marcador; a origem 0 0 0 é o centro dele -->
-    <a-marker preset="hiro">
+    <!-- <a-marker preset="hiro">   antigo detector de codigo-->  
+	<a-marker preset="hiro" aviso-marcador>
+	
       <!-- <a-box position="0 0.5 0" color="#6c4cff"></a-box> -- [APENAS UM CUBO ROXO]>
 	  
 	  <!-- o sistema: o planeta gira no próprio eixo, e a lua gira em volta dele -->
