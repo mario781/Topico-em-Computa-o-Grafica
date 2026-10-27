@@ -46,8 +46,8 @@
 
     <!-- ================ O MARCADOR ================ -->
     <!-- tudo o que fica dentro do a-marker aparece sobre o marcador; a origem 0 0 0 é o centro dele -->
-    <!-- <a-marker preset="hiro">   antigo detector de codigo-->  
-	<a-marker preset="hiro" aviso-marcador>
+    <!-- <a-marker preset="hiro">   antigo  aviso sem detector de codigo-->  
+	<a-marker preset="hiro" aviso-marcador>    <!-- Novo aviso com detector de código -->
 	
       <!-- <a-box position="0 0.5 0" color="#6c4cff"></a-box> -- [APENAS UM CUBO ROXO]>
 	  
@@ -61,11 +61,20 @@
 		   <!-- a fonte do A-Frame não tem acentos: por enquanto, nomes sem acento -->
         <a-text value="Terra" align="center" position="0 0.75 0" color="#706b6b" width="4"></a-text>
 		  
-		  
         </a-entity>
       </a-entity>
     </a-marker>
-
+	
+	 </a-marker>
+​
+    <!-- ================ O SEGUNDO MARCADOR ================ -->
+    <!-- cada marcador é uma âncora independente: o Kanji tem o seu próprio conteúdo -->
+    <a-marker preset="kanji" aviso-marcador>
+      <a-cone position="0 0.5 0" radius-bottom="0.4" height="0.9" color="#f472b6"
+              animation="property: rotation; to: 0 360 0; loop: true; dur: 6000; easing: linear"></a-cone>
+    </a-marker>
+​
+	
     <!-- ================ A CÂMERA ================ -->
     <!-- quem move a câmera é o AR.js, a partir da imagem do marcador -->
     <a-entity camera></a-entity>
