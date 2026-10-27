@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AR com marcador</title>
+  <script src="https://aframe.io/releases/1.6.0/aframe.min.js"></script>
+  <script src="https://raw.githack.com/AR-js-org/AR.js/3.4.7/aframe/build/aframe-ar.js"></script>
+
+  <style>
+    /* ================ ESTILO DO AVISO ================ */
+    body { margin: 0; overflow: hidden; }
+    #aviso { position: fixed; top: 12px; left: 12px; z-index: 10; max-width: 320px; padding: 10px 14px;
+             border-radius: 10px; background: rgba(27, 21, 38, 0.85); color: #fff; font: 16px sans-serif; }
+  </style>
+</head>
+<body>
+  <!-- ================ O AVISO NA TELA ================ -->
+  <div id="aviso">Aponte a câmera para o marcador Hiro.</div>
+
+  <!-- embedded e arjs: o A-Frame desenha por cima da imagem da câmera -->
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false">
+
+    <!-- ================ LUZ ================ -->
+    <a-light type="ambient" intensity="0.9"></a-light>
+    <a-light type="directional" intensity="0.6" position="1 2 1"></a-light>
+
+    <!-- ================ O MARCADOR ================ -->
+    <!-- tudo o que fica dentro do a-marker aparece sobre o marcador; a origem 0 0 0 é o centro dele -->
+    <a-marker preset="hiro">
+      <!-- <a-box position="0 0.5 0" color="#6c4cff"></a-box> -- [APENAS UM CUBO ROXO]>
+	  
+	  <!-- o sistema: o planeta gira no próprio eixo, e a lua gira em volta dele -->
+      <a-entity position="0 0.5 0">
+        <a-sphere radius="0.4" color="#4fd1c5"
+                  animation="property: rotation; to: 0 360 0; loop: true; dur: 8000; easing: linear"></a-sphere>
+        <!-- o pivô da lua: gira, e leva a lua junto (pai e filho, do Encontro 1) -->
+        <a-entity animation="property: rotation; to: 0 360 0; loop: true; dur: 4000; easing: linear">
+          <a-sphere radius="0.1" color="#ffb454" position="0.8 0 0"></a-sphere>
+        </a-entity>
+      </a-entity>
+    </a-marker>
+
+    <!-- ================ A CÂMERA ================ -->
+    <!-- quem move a câmera é o AR.js, a partir da imagem do marcador -->
+    <a-entity camera></a-entity>
+  </a-scene>
+</body>
+</html>
