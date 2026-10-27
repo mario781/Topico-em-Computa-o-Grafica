@@ -1,0 +1,1 @@
+Era para aparecer um boneco junto com as formas, mas nao esta aparecendo.
